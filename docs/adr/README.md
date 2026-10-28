@@ -1,0 +1,16 @@
+# Architecture Decision Records (ADR)
+
+An ADR is a short note that answers: **why did we decide this?**
+Before you change or remove something important, read its ADR first.
+
+Rules:
+
+- One decision per file: `NNNN-short-title.md`, numbered in order.
+- Never rewrite history. If a decision changes, write a new ADR and mark the old one `Superseded by NNNN`.
+- Template: Status → Context → Decision → Consequences.
+
+| #    | Title                                                                                      | Status   |
+| ---- | ------------------------------------------------------------------------------------------ | -------- |
+| 0001 | [Record architecture decisions](0001-record-architecture-decisions.md)                     | Accepted |
+| 0002 | [Modular monolith in a pnpm monorepo, built for change](0002-modular-monolith-monorepo.md) | Accepted |
+| 0003 | [Tech stack](0003-tech-stack.md)                                                           | Accepted |

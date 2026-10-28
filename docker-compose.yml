@@ -1,0 +1,24 @@
+# Local development services. Run: pnpm db:up
+# The same image runs on the production server, so "works on my machine" = works there.
+services:
+  db:
+    image: postgres:18-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-expenses}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-expenses_dev_password}
+      POSTGRES_DB: ${POSTGRES_DB:-expenses}
+    ports:
+      # Bound to localhost only: the database is never exposed to your network.
+      - '127.0.0.1:5432:5432'
+    volumes:
+      # Postgres 18+ images store data under /var/lib/postgresql/<version>/...
+      - db-data:/var/lib/postgresql
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}']
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  db-data:
