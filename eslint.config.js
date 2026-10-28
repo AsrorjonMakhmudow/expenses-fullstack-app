@@ -6,7 +6,7 @@ import prettier from 'eslint-config-prettier';
 
 /**
  * One ESLint config for the whole monorepo (DRY).
- * Apps can add their own rules later (React rules for web, boundary rules for api).
+ * App-specific blocks below add rules only where they apply.
  */
 export default defineConfig(
   globalIgnores(['**/node_modules/**', '**/dist/**', '**/coverage/**']),
@@ -23,6 +23,24 @@ export default defineConfig(
       ],
       'no-console': ['warn', { allow: ['warn', 'error'] }],
       eqeqeq: ['error', 'always'],
+      // Front-door rule: import shared code only from the package root, never its internals.
+      'no-restricted-imports': [
+        'error',
+        {
+          patterns: [
+            { group: ['@expenses/shared/*'], message: 'Import from "@expenses/shared" only.' },
+          ],
+        },
+      ],
+    },
+  },
+  {
+    // NestJS reads constructor parameter TYPES at runtime (decorator metadata) to inject
+    // dependencies. Telling typescript-eslint about it stops the auto-fixer from turning
+    // those imports into `import type` — which would silently break dependency injection.
+    files: ['apps/api/**/*.ts'],
+    languageOptions: {
+      parserOptions: { emitDecoratorMetadata: true, experimentalDecorators: true },
     },
   },
   // Prettier owns formatting; this turns off ESLint rules that would fight it. Keep it last.

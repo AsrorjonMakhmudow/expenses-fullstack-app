@@ -1,4 +1,4 @@
-# Expenses App — Architecture & Roadmap (v2, 2026-10-28)
+# Expenses App — Architecture & Roadmap (v3, 2026-10-28)
 
 ## Principle #1 — Built for change (applies to EVERY decision below)
 
@@ -47,9 +47,9 @@ Rule: date line `DD.MM.YYYY`, then lines `AMOUNT - description`. Amount uses `.`
 | Import format      | Telegram Desktop JSON export (+ pasted .txt). Excel/CSV later as extra parser. Word never.            | Zero manual work; same format you already write.                                                    |
 | Long-term input    | Telegram bot writes directly to DB (later phase)                                                      | Keep your habit, no exports.                                                                        |
 | Database           | PostgreSQL                                                                                            | Relational, exact money types, date_trunc/GROUP BY, constraints, free.                              |
-| ORM                | Prisma (+ raw SQL for reports)                                                                        | Typed, migrations, good docs.                                                                       |
+| ORM                | Drizzle ORM + drizzle-kit migrations (was Prisma — see ADR 0005)                                      | SQL-first, pure TS, no native binaries.                                                             |
 | Money              | BIGINT in so'm (integer)                                                                              | Floats lose precision (0.1+0.2).                                                                    |
-| Backend            | Node.js + TypeScript + NestJS (after a short raw-Node/Express warm-up)                                | Modules + DI map directly to SOLID; scales with features.                                           |
+| Backend            | Node.js 24 + TypeScript + NestJS 12 (ESM)                                                             | Modules + DI map directly to SOLID; scales with features.                                           |
 | Architecture       | Modular monolith, API-first                                                                           | One app with clear rooms; web + future mobile share the API.                                        |
 | Frontend           | Vite + React + TS, FSD, TanStack Query, React Router, react-hook-form + Zod, Apache ECharts, Tailwind |                                                                                                     |
 | Repo               | pnpm monorepo: apps/api, apps/web, packages/shared (zod schemas, types, parser, money/date utils)     | DRY: one schema for front + back; parser reused.                                                    |
@@ -89,7 +89,7 @@ apps/api/src/
   main.ts, app.module.ts
   config/            env validation (zod)
   common/            exception filter, guards, pipes, interceptors
-  infra/database/    PrismaService
+  infra/database/    Drizzle schema, DB module, migrate script
   modules/
     auth/
     expenses/        controller → service → repository, dto
@@ -117,11 +117,11 @@ Imports go only downward: app → pages → widgets → features → entities �
 
 ## Roadmap
 
-0. Setup: git, pnpm monorepo, TS strict, ESLint/Prettier, Docker Postgres, boundary linters (steiger, dependency-cruiser), `docs/adr/` with ADR-001, typed feature-flag config, CI running lint + tests.
-1. Parser in packages/shared (pure TS, TDD with Vitest) — heart of the app.
-2. Node fundamentals warm-up: raw node:http + Express version of one endpoint.
-3. NestJS + Prisma + Postgres: expenses CRUD, migrations, validation, error handling.
-4. Imports: upload → preview → commit, dedupe, transactions.
+0. ✅ Setup: git, pnpm monorepo, TS strict, ESLint/Prettier, Docker Postgres, boundary linters (steiger, dependency-cruiser), `docs/adr/` with ADR-001, typed feature-flag config, CI running lint + tests.
+1. ✅ Parser in packages/shared (pure TS, TDD with Vitest) — heart of the app.
+2. Node fundamentals warm-up: raw node:http + Express version of one endpoint (optional learning exercise).
+3. ✅ NestJS + Drizzle + Postgres: expenses CRUD, migrations, Zod validation, unit + e2e tests.
+4. ✅ Imports: upload → preview → commit, dedupe fingerprints, one transaction, undo (ADR 0006).
 5. Stats endpoints (SQL date_trunc + GROUP BY).
 6. Auth (argon2, sessions, guard, rate-limit login).
 7. Frontend: FSD skeleton, login, dashboard charts, import wizard, expenses table.

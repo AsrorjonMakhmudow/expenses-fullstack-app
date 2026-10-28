@@ -7,15 +7,21 @@
     "node": ">=24"
   },
   "scripts": {
-    "test": "pnpm -r test",
-    "typecheck": "pnpm -r typecheck",
+    "dev:api": "pnpm build:shared && pnpm --filter @expenses/api dev",
+    "build": "pnpm -r build",
+    "build:shared": "pnpm --filter @expenses/shared build",
+    "test": "pnpm build:shared && pnpm -r test",
+    "test:e2e": "pnpm build:shared && pnpm --filter @expenses/api test:e2e",
+    "typecheck": "pnpm build:shared && pnpm -r typecheck",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "check": "pnpm format:check && pnpm lint && pnpm typecheck && pnpm test",
     "db:up": "docker compose up -d db",
-    "db:down": "docker compose down"
+    "db:down": "docker compose down",
+    "db:generate": "pnpm build:shared && pnpm --filter @expenses/api db:generate",
+    "db:migrate": "pnpm --filter @expenses/api db:migrate"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

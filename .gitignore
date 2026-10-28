@@ -12,6 +12,12 @@ coverage
 .env.*
 !.env.example
 
+# personal data (Telegram exports) — never goes to GitHub
+data/
+
+# files the Claude desktop app drops here (zips, previews) — not project code
+Claude outputs/
+
 # OS / editor / logs
 .DS_Store
 .idea
