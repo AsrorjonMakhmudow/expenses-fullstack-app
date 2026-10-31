@@ -8,12 +8,13 @@
   },
   "scripts": {
     "dev:api": "pnpm build:shared && pnpm --filter @expenses/api dev",
+    "dev:web": "pnpm build:shared && pnpm --filter @expenses/web dev",
     "build": "pnpm -r build",
     "build:shared": "pnpm --filter @expenses/shared build",
     "test": "pnpm build:shared && pnpm -r test",
     "test:e2e": "pnpm build:shared && pnpm --filter @expenses/api test:e2e",
     "typecheck": "pnpm build:shared && pnpm -r typecheck",
-    "lint": "eslint .",
+    "lint": "eslint . && pnpm --filter @expenses/web lint:fsd",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
@@ -27,6 +28,7 @@
     "@eslint/js": "^10.0.1",
     "eslint": "^10.13.0",
     "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-react-hooks": "^7.1.1",
     "prettier": "^3.9.10",
     "typescript": "~6.0.3",
     "typescript-eslint": "^8.72.1"

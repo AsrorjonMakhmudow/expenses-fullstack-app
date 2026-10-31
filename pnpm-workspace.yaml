@@ -3,3 +3,6 @@ packages:
   - 'packages/*'
 allowBuilds:
   esbuild: true
+# eslint-plugin-react-hooks needs zod-validation-error v4 when zod v4 is installed (its ^3 range lacks the /v4 export)
+overrides:
+  zod-validation-error: ^4.0.0

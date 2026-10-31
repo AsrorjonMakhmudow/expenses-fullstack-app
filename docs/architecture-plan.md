@@ -122,9 +122,9 @@ Imports go only downward: app → pages → widgets → features → entities �
 2. Node fundamentals warm-up: raw node:http + Express version of one endpoint (optional learning exercise).
 3. ✅ NestJS + Drizzle + Postgres: expenses CRUD, migrations, Zod validation, unit + e2e tests.
 4. ✅ Imports: upload → preview → commit, dedupe fingerprints, one transaction, undo (ADR 0006).
-5. Stats endpoints (SQL date_trunc + GROUP BY).
+5. ✅ Stats endpoints: summary, timeseries (year/month/day, gaps filled), top expenses.
 6. Auth (argon2, sessions, guard, rate-limit login).
-7. Frontend: FSD skeleton, login, dashboard charts, import wizard, expenses table.
+7. ✅ Frontend (before auth, by choice): FSD, dashboard charts, import wizard, expenses table (ADR 0007). Login page comes with Phase 6.
 8. Deploy: Docker Compose, Caddy, domain, backups, GitHub Actions CI.
    9+. Telegram bot, categories (keyword rules), budgets, Excel export, mobile app (Expo, reusing packages/shared).
 

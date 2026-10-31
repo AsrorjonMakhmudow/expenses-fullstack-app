@@ -41,3 +41,4 @@ jobs:
       - run: pnpm typecheck
       - run: pnpm test
       - run: pnpm test:e2e
+      - run: pnpm build # proves the API and the web app compile for production

@@ -3,6 +3,7 @@ import { defineConfig, globalIgnores } from 'eslint/config';
 import js from '@eslint/js';
 import tseslint from 'typescript-eslint';
 import prettier from 'eslint-config-prettier';
+import reactHooks from 'eslint-plugin-react-hooks';
 
 /**
  * One ESLint config for the whole monorepo (DRY).
@@ -42,6 +43,11 @@ export default defineConfig(
     languageOptions: {
       parserOptions: { emitDecoratorMetadata: true, experimentalDecorators: true },
     },
+  },
+  {
+    // React: enforce the Rules of Hooks (hooks only at the top level, complete dependency lists).
+    files: ['apps/web/**/*.{ts,tsx}'],
+    extends: [reactHooks.configs.flat['recommended-latest']],
   },
   // Prettier owns formatting; this turns off ESLint rules that would fight it. Keep it last.
   prettier,

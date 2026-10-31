@@ -6,6 +6,7 @@ import { AuthModule } from './modules/auth/auth.module.js';
 import { ExpensesModule } from './modules/expenses/expenses.module.js';
 import { HealthModule } from './modules/health/health.module.js';
 import { ImportsModule } from './modules/imports/imports.module.js';
+import { StatsModule } from './modules/stats/stats.module.js';
 
 /**
  * The root module: plugs all features together.
@@ -19,6 +20,7 @@ import { ImportsModule } from './modules/imports/imports.module.js';
     HealthModule,
     ExpensesModule,
     ImportsModule,
+    StatsModule,
   ],
 })
 export class AppModule {}

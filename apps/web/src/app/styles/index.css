@@ -1,0 +1,44 @@
+@import 'tailwindcss';
+
+/*
+ * Design tokens: colors by ROLE, defined once. Components use classes like `bg-surface`,
+ * `text-ink-2`, `border-line` — never raw hex. Dark mode = redefine the tokens, nothing else.
+ */
+@theme {
+  --color-page: #f9f9f7;
+  --color-surface: #fcfcfb;
+  --color-ink: #0b0b0b;
+  --color-ink-2: #52514e;
+  --color-ink-3: #6f6d68;
+  --color-line: #e1e0d9;
+  --color-accent: #2a78d6;
+  --color-danger: #d03b3b;
+  --color-success: #006300;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-page: #0d0d0d;
+    --color-surface: #1a1a19;
+    --color-ink: #f0efec;
+    --color-ink-2: #c3c2b7;
+    --color-ink-3: #9a988f;
+    --color-line: #2c2c2a;
+    --color-accent: #3987e5;
+    --color-danger: #e66767;
+    --color-success: #0ca30c;
+  }
+}
+
+body {
+  background: var(--color-page);
+  color: var(--color-ink);
+  font-family:
+    Inter,
+    system-ui,
+    -apple-system,
+    'Segoe UI',
+    Roboto,
+    sans-serif;
+  font-variant-numeric: tabular-nums; /* digits line up in tables */
+}

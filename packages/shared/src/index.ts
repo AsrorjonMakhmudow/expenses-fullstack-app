@@ -10,3 +10,5 @@ export { parseSomAmount } from './lib/money.js';
 export * from './expense-import/index.js';
 export * from './expense/expense.contract.js';
 export * from './import/import.contract.js';
+export * from './stats/stats.contract.js';
+export * from './stats/periods.js';

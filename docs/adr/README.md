@@ -17,3 +17,4 @@ Rules:
 | 0004 | [Expense note format and parser](0004-expense-note-parser.md)                              | Accepted                  |
 | 0005 | [API: NestJS 12 (ESM) + Drizzle ORM instead of Prisma](0005-api-nestjs-esm-and-drizzle.md) | Accepted                  |
 | 0006 | [Import flow and de-duplication](0006-import-flow-and-deduplication.md)                    | Accepted                  |
+| 0007 | [Frontend: React + Vite + Feature-Sliced Design](0007-frontend-fsd-react.md)               | Accepted                  |
