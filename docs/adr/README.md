@@ -16,5 +16,6 @@ Rules:
 | 0003 | [Tech stack](0003-tech-stack.md)                                                           | Accepted (ORM row → 0005) |
 | 0004 | [Expense note format and parser](0004-expense-note-parser.md)                              | Accepted                  |
 | 0005 | [API: NestJS 12 (ESM) + Drizzle ORM instead of Prisma](0005-api-nestjs-esm-and-drizzle.md) | Accepted                  |
-| 0006 | [Import flow and de-duplication](0006-import-flow-and-deduplication.md)                    | Accepted                  |
+| 0006 | [Import flow and de-duplication](0006-import-flow-and-deduplication.md)                    | Accepted (types → 0008)   |
 | 0007 | [Frontend: React + Vite + Feature-Sliced Design](0007-frontend-fsd-react.md)               | Accepted                  |
+| 0008 | [Import from .md, .rtf and .docx files](0008-document-import-formats.md)                   | Accepted                  |

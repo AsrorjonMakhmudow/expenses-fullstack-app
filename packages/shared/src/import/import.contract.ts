@@ -55,3 +55,17 @@ export interface ImportBatchDto {
 
 /** Upload limit, shared so the web app can check BEFORE uploading (UX), and the API enforces it (security). */
 export const MAX_IMPORT_FILE_BYTES = 20 * 1024 * 1024;
+
+/**
+ * File types the Import page accepts (`<input accept>`). Kept here, not computed from the parser
+ * registry, so the web app doesn't download the parsers just to know this list.
+ * A registry test fails if the two ever disagree.
+ */
+export const IMPORT_FILE_EXTENSIONS: readonly string[] = [
+  '.json',
+  '.txt',
+  '.md',
+  '.markdown',
+  '.rtf',
+  '.docx',
+];

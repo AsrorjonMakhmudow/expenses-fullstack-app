@@ -1,5 +1,8 @@
 import type { ExpenseSourceParser, ImportInput } from '../model/types.js';
+import { docxParser } from './docx.parser.js';
+import { markdownParser } from './markdown.parser.js';
 import { plainTextParser } from './plain-text.parser.js';
+import { rtfParser } from './rtf.parser.js';
 import { telegramJsonParser } from './telegram-json.parser.js';
 
 /**
@@ -10,6 +13,9 @@ import { telegramJsonParser } from './telegram-json.parser.js';
 export const expenseSourceParsers: readonly ExpenseSourceParser[] = [
   telegramJsonParser,
   plainTextParser,
+  markdownParser,
+  rtfParser,
+  docxParser,
 ];
 
 export function findParser(

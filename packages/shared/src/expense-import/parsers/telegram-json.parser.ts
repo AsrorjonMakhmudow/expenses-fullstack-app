@@ -74,6 +74,7 @@ function invalidFile(detail: string): ParseResult {
 export const telegramJsonParser: ExpenseSourceParser = {
   id: 'telegram-json',
   label: 'Telegram export (result.json)',
+  extensions: ['.json'],
 
   canParse: ({ fileName }) => /\.json$/i.test(fileName),
 

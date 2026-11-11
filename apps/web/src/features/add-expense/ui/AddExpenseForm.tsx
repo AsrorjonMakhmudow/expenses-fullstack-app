@@ -3,7 +3,7 @@ import { useState } from 'react';
 import type { FormEvent, ReactNode } from 'react';
 import { ApiError } from '@/shared/api';
 import { todayIso } from '@/shared/lib';
-import { Button } from '@/shared/ui';
+import { AmountInput, Button } from '@/shared/ui';
 import { useCreateExpense } from '../model/use-create-expense';
 
 type FieldName = 'date' | 'amount' | 'description';
@@ -12,19 +12,20 @@ type FieldErrors = Partial<Record<FieldName, string>>;
 // Human messages instead of the schema's technical ones ("Too small: expected string…").
 const FRIENDLY_ERRORS: Record<FieldName, string> = {
   date: 'Pick a valid date',
-  amount: "Whole so'm, e.g. 65.000",
+  amount: "Whole so'm, e.g. 65 000",
   description: 'What was it for?',
 };
 
 const inputClass = 'w-full rounded-lg border border-line bg-surface px-3 py-2 text-ink';
 
 /**
- * Add one expense by hand. The amount is typed the same way you write it in Telegram
- * ("65.000"), and validated with the SAME schema the server uses — instant feedback for
+ * Add one expense by hand. The amount groups thousands as you type ("1 250 000"; pasting
+ * "65.000" from Telegram works too), and is validated with the SAME schema the server uses — instant feedback for
  * you, while the server still re-checks everything (client validation is UX, not security).
  */
 export function AddExpenseForm() {
   const [date, setDate] = useState(todayIso);
+  /** Digits only ('1250000'); AmountInput shows it grouped. */
   const [amount, setAmount] = useState('');
   const [description, setDescription] = useState('');
   const [errors, setErrors] = useState<FieldErrors>({});
@@ -73,12 +74,11 @@ export function AddExpenseForm() {
         />
       </Field>
       <Field label="Amount (so'm)" error={errors.amount}>
-        <input
-          inputMode="numeric"
-          placeholder="65.000"
+        <AmountInput
+          placeholder="65 000"
           className={inputClass}
           value={amount}
-          onChange={(e) => setAmount(e.target.value)}
+          onValueChange={setAmount}
         />
       </Field>
       <Field label="Description" error={errors.description}>

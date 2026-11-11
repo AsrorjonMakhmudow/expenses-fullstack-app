@@ -1,3 +1,4 @@
+import { readFileSync } from 'node:fs';
 import type { NestExpressApplication } from '@nestjs/platform-express';
 import { Test } from '@nestjs/testing';
 import { sql } from 'drizzle-orm';
@@ -25,6 +26,9 @@ const OCTOBER = telegramExport([
   },
   { id: 2, type: 'message', date: '2026-10-04T22:00:00', text: 'https://example.com' },
 ]);
+
+/** Real files saved by LibreOffice (same note in both): 2 days, 5 expenses, 1 190 000 so'm. */
+const fixture = (name: string) => readFileSync(new URL(`./fixtures/${name}`, import.meta.url));
 
 describe('Imports API (e2e)', () => {
   let app: NestExpressApplication;
@@ -80,10 +84,40 @@ describe('Imports API (e2e)', () => {
     expect((await http.get('/api/v1/expenses')).body.total).toBe(0);
   });
 
-  it('rejects a missing file, Word files and broken JSON', async () => {
+  it('rejects a missing file, unsupported types and broken files', async () => {
     await http.post('/api/v1/imports/preview').expect(400);
-    await upload('/preview', Buffer.from('x'), 'october.docx').expect(400);
+    await upload('/preview', Buffer.from('x'), 'october.pdf').expect(400);
+    await upload('/preview', Buffer.from('x'), 'october.doc').expect(400);
     const broken = await upload('/preview', Buffer.from('{oops')).expect(200);
     expect(broken.body.issues).toMatchObject([{ code: 'INVALID_FILE' }]);
+    // A text file renamed to .docx is not a ZIP: readable error, nothing imported.
+    const fakeDocx = await upload('/preview', Buffer.from('x'), 'october.docx').expect(200);
+    expect(fakeDocx.body.issues).toMatchObject([{ code: 'INVALID_FILE' }]);
+    expect(fakeDocx.body.summary.parsed).toBe(0);
+  });
+
+  it.each([
+    ['notes.docx', 'docx'],
+    ['notes.rtf', 'rtf'],
+  ])('imports a real %s file through the upload', async (name, parserId) => {
+    const file = fixture(name);
+    const preview = await upload('/preview', file, name).expect(200);
+    expect(preview.body.parser.id).toBe(parserId);
+    expect(preview.body.issues).toEqual([]);
+    expect(preview.body.summary).toMatchObject({
+      parsed: 5,
+      new: 5,
+      newAmount: 1_190_000,
+      firstDate: '2026-10-31',
+      lastDate: '2026-11-01',
+    });
+    expect(preview.body.expenses.map((e: { description: string }) => e.description)).toContain(
+      'билайн номеримга ташадим',
+    );
+
+    await upload('', file, name).expect(201);
+    const list = await http.get('/api/v1/expenses').expect(200);
+    expect(list.body.total).toBe(5);
+    expect(list.body.items[0].source).toBe('plain_text_import');
   });
 });

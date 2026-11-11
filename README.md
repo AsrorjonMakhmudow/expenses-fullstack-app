@@ -58,6 +58,12 @@ curl -s -F file=@data/result.json http://localhost:3000/api/v1/imports/preview \
 curl -s -F file=@data/result.json http://localhost:3000/api/v1/imports
 ```
 
+> **Keep every personal file in `data/`** — Telegram exports and notes in any format
+> (`.json`, `.txt`, `.md`, `.rtf`, `.docx`). That folder is git-ignored, so nothing in it can be
+> pushed. A notes file anywhere else (e.g. `october.md` in the project root) **would** be committed.
+> As an extra safety net, `.rtf` and `.docx` are ignored everywhere except the test fixtures.
+> Before `git add -A`, run `git status` and check there is no file you don't recognise.
+
 ## Scripts
 
 | Command                                 | What it does                                      |

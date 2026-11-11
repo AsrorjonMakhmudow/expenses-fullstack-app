@@ -1,4 +1,4 @@
-import { MAX_IMPORT_FILE_BYTES } from '@expenses/shared';
+import { MAX_IMPORT_FILE_BYTES, IMPORT_FILE_EXTENSIONS } from '@expenses/shared';
 import type { ImportPreviewDto } from '@expenses/shared';
 import { useState } from 'react';
 import type { ChangeEvent } from 'react';
@@ -7,6 +7,8 @@ import { Button, Card, ErrorMessage, Spinner } from '@/shared/ui';
 import { useCommitImport, usePreviewImport } from '../model/use-import-expenses';
 
 const MAX_ISSUES_SHOWN = 200;
+/** ".json,.txt,.md,…" — the shared list the parser registry is tested against. */
+const ACCEPT = IMPORT_FILE_EXTENSIONS.join(',');
 
 /**
  * Upload → Preview → Import.
@@ -32,14 +34,15 @@ export function ImportWizard() {
 
   return (
     <div className="grid grid-cols-1 gap-4">
-      <Card title="1. Choose your Telegram export">
+      <Card title="1. Choose your Telegram export or notes file">
         <p className="mb-3 text-sm text-ink-2">
           Telegram Desktop → Saved Messages → ⋮ → Export chat history → format <b>JSON</b>. Then
-          pick <code>result.json</code> here (a <code>.txt</code> file works too).
+          pick <code>result.json</code> here. Notes saved as <code>.txt</code>, <code>.md</code>,{' '}
+          <code>.rtf</code> or Word <code>.docx</code> work too.
         </p>
         <input
           type="file"
-          accept=".json,.txt"
+          accept={ACCEPT}
           onChange={handleFile}
           className="block text-sm file:mr-3 file:rounded-lg file:border-0 file:bg-accent file:px-3 file:py-2 file:text-white"
         />

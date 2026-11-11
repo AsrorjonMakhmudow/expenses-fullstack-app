@@ -1,7 +1,9 @@
 import { createHash } from 'node:crypto';
+import { inflateRawSync } from 'node:zlib';
 import { expenseSourceParsers, findParser } from '@expenses/shared';
 import type {
   ExpenseSource,
+  InflateRaw,
   ExpenseSourceParser,
   ImportBatchDto,
   ImportPreviewDto,
@@ -25,9 +27,13 @@ export interface UploadedImportFile {
 }
 
 /** Which `expenses.source` value each parser produces. New parser → one new line here. */
-const SOURCE_BY_PARSER: Record<string, ExpenseSource> = {
+export const SOURCE_BY_PARSER: Record<string, ExpenseSource> = {
   'telegram-json': 'telegram_import',
   'plain-text': 'plain_text_import',
+  // Same notes, different wrapping — no new database value needed.
+  markdown: 'plain_text_import',
+  rtf: 'plain_text_import',
+  docx: 'plain_text_import',
 };
 
 interface Analysis {
@@ -105,7 +111,13 @@ export class ImportsService {
   private async analyse(userId: string, file: UploadedImportFile | undefined): Promise<Analysis> {
     if (!file) throw new BadRequestException('Attach a file in the "file" field.');
 
-    const input = { fileName: file.originalname, content: decodeUtf8(file.buffer) };
+    const input = {
+      fileName: file.originalname,
+      content: decodeUtf8(file.buffer),
+      // Binary formats (.docx) need the original bytes, not the UTF-8 text.
+      bytes: new Uint8Array(file.buffer.buffer, file.buffer.byteOffset, file.buffer.byteLength),
+      inflateRaw,
+    };
     const parser = findParser(input);
     if (!parser) {
       const supported = expenseSourceParsers.map((p) => p.label).join(', ');
@@ -130,6 +142,13 @@ export class ImportsService {
     };
   }
 }
+
+/**
+ * Decompression for .docx. Native zlib stops as soon as the output would pass the limit, so a
+ * "zip bomb" costs milliseconds instead of minutes (fflate couldn't stop early: CVE-2026-122146).
+ */
+const inflateRaw: InflateRaw = (data, maxOutputBytes) =>
+  inflateRawSync(data, { maxOutputLength: maxOutputBytes });
 
 /** Files saved on Windows often start with an invisible BOM character — drop it. */
 function decodeUtf8(buffer: Buffer): string {

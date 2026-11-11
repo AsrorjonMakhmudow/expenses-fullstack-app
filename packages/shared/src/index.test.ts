@@ -7,6 +7,13 @@ describe('@expenses/shared public API', () => {
   it('exposes the expense import entry points', () => {
     expect(typeof shared.parseExpenseText).toBe('function');
     expect(typeof shared.findParser).toBe('function');
-    expect(shared.expenseSourceParsers.map((p) => p.id)).toEqual(['telegram-json', 'plain-text']);
+    expect(shared.expenseSourceParsers.map((p) => p.id)).toEqual([
+      'telegram-json',
+      'plain-text',
+      'markdown',
+      'rtf',
+      'docx',
+    ]);
+    expect(shared.IMPORT_FILE_EXTENSIONS).toContain('.docx');
   });
 });

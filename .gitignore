@@ -12,8 +12,14 @@ coverage
 .env.*
 !.env.example
 
-# personal data (Telegram exports) — never goes to GitHub
+# personal data (Telegram exports, notes) — never goes to GitHub
 data/
+
+# safety net: notes saved from Word/TextEdit are personal data too — keep them in data/.
+# The only .rtf/.docx files the project needs are the API test fixtures.
+*.rtf
+*.docx
+!apps/api/test/fixtures/**
 
 # files the Claude desktop app drops here (zips, previews) — not project code
 Claude outputs/

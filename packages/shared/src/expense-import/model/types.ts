@@ -49,22 +49,37 @@ export interface ParseResult {
 /** What the user uploaded or pasted. */
 export interface ImportInput {
   fileName: string;
+  /** The file as UTF-8 text (BOM removed). Enough for text formats: .json, .txt, .md, .rtf. */
   content: string;
+  /** The original bytes. Needed by binary formats (.docx is a ZIP archive). */
+  bytes?: Uint8Array;
+  /**
+   * Decompressor supplied by the host (the API passes node:zlib). Without it .docx files can't
+   * be read. Kept out of this package so it stays dependency-free and runs in the browser too.
+   */
+  inflateRaw?: InflateRaw;
 }
+
+/**
+ * Decompresses raw DEFLATE data. MUST throw rather than return more than `maxOutputBytes`
+ * (node:zlib: `inflateRawSync(data, { maxOutputLength })` does exactly that).
+ */
+export type InflateRaw = (data: Uint8Array, maxOutputBytes: number) => Uint8Array;
 
 /**
  * Extension point (Strategy pattern, Open/Closed principle).
  * A new source (Excel, CSV, Telegram bot…) = a new object implementing this interface,
  * added to the registry. Existing parsers and the import service stay untouched.
  *
- * Note: `content` is text for now. When we add Excel (binary), we widen ImportInput then —
- * not earlier (YAGNI).
+ * Binary formats (e.g. .docx) read `bytes`; text formats read `content`.
  */
 export interface ExpenseSourceParser {
   /** Stable id stored with each import batch, e.g. "telegram-json". */
   readonly id: string;
   /** Human-readable name for the UI. */
   readonly label: string;
+  /** File extensions it reads, lower case with the dot: ['.txt']. Drives the upload picker. */
+  readonly extensions: readonly string[];
   canParse(input: ImportInput): boolean;
   parse(input: ImportInput): ParseResult;
 }

@@ -1,6 +1,6 @@
 # 0006. Import flow and de-duplication
 
-- Status: Accepted
+- Status: Accepted — the supported upload types are extended by [ADR 0008](0008-document-import-formats.md)
 - Date: 2026-10-29
 
 ## Context
