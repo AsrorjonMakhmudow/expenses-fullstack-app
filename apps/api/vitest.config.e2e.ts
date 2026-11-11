@@ -19,7 +19,9 @@ export default defineConfig({
     env: {
       NODE_ENV: 'test',
       DATABASE_URL: testDatabaseUrl,
-      OWNER_EMAIL: process.env['OWNER_EMAIL'] ?? 'owner@example.com',
+      // Tests sign in many times; auth-rate-limit.e2e-spec.ts checks the real limit itself.
+      AUTH_RATE_LIMIT: '1000',
+      REGISTRATION_ENABLED: 'true',
     },
     fileParallelism: false, // all test files share one database
     testTimeout: 20_000,

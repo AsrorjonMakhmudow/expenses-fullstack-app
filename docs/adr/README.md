@@ -19,3 +19,4 @@ Rules:
 | 0006 | [Import flow and de-duplication](0006-import-flow-and-deduplication.md)                    | Accepted (types → 0008)   |
 | 0007 | [Frontend: React + Vite + Feature-Sliced Design](0007-frontend-fsd-react.md)               | Accepted                  |
 | 0008 | [Import from .md, .rtf and .docx files](0008-document-import-formats.md)                   | Accepted                  |
+| 0009 | [Authentication: email + password, server-side sessions](0009-auth-sessions.md)            | Accepted                  |

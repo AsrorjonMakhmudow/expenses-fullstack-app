@@ -1,5 +1,6 @@
 import { createBrowserRouter } from 'react-router';
 import { AppShell } from '@/widgets/app-shell';
+import { GuestOnly, RequireAuth } from './auth/route-guards';
 
 /**
  * All pages in one place. New page = one new route here.
@@ -9,22 +10,46 @@ import { AppShell } from '@/widgets/app-shell';
  */
 export const router = createBrowserRouter([
   {
-    element: <AppShell />,
     // Plain text on purpose: importing shared/ui here would pull the chart library into the
     // first download (that barrel file also exports the chart component).
     hydrateFallbackElement: <p className="p-6 text-sm">Loading…</p>,
     children: [
       {
-        index: true,
-        lazy: () => import('@/pages/dashboard').then((m) => ({ Component: m.DashboardPage })),
+        element: <GuestOnly />,
+        children: [
+          {
+            path: 'login',
+            lazy: () => import('@/pages/sign-in').then((m) => ({ Component: m.SignInPage })),
+          },
+          {
+            path: 'register',
+            lazy: () => import('@/pages/sign-up').then((m) => ({ Component: m.SignUpPage })),
+          },
+        ],
       },
       {
-        path: 'expenses',
-        lazy: () => import('@/pages/expenses').then((m) => ({ Component: m.ExpensesPage })),
-      },
-      {
-        path: 'import',
-        lazy: () => import('@/pages/import').then((m) => ({ Component: m.ImportPage })),
+        // Everything below needs a signed-in user.
+        element: <RequireAuth />,
+        children: [
+          {
+            element: <AppShell />,
+            children: [
+              {
+                index: true,
+                lazy: () =>
+                  import('@/pages/dashboard').then((m) => ({ Component: m.DashboardPage })),
+              },
+              {
+                path: 'expenses',
+                lazy: () => import('@/pages/expenses').then((m) => ({ Component: m.ExpensesPage })),
+              },
+              {
+                path: 'import',
+                lazy: () => import('@/pages/import').then((m) => ({ Component: m.ImportPage })),
+              },
+            ],
+          },
+        ],
       },
     ],
   },

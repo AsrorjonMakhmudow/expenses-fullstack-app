@@ -27,11 +27,19 @@ docker/            database init scripts
 ```bash
 nvm use
 pnpm install
-cp .env.example .env     # then edit passwords and OWNER_EMAIL
+cp .env.example .env     # then change the passwords
 pnpm db:up               # start PostgreSQL in Docker (also creates expenses_test)
 pnpm db:migrate          # create the tables
 pnpm dev:api             # terminal 1 → http://localhost:3000/api/v1/health
 pnpm dev:web             # terminal 2 → http://localhost:5173  (the app)
+```
+
+Open http://localhost:5173 and **create an account**. Already had data from before sign-in
+existed (the old `OWNER_EMAIL` user)? Give that account a password instead — it keeps all its
+expenses:
+
+```bash
+pnpm auth:set-password you@example.com   # asks for the password (hidden), twice
 ```
 
 Try it:
@@ -78,6 +86,7 @@ curl -s -F file=@data/result.json http://localhost:3000/api/v1/imports
 | `pnpm db:up` / `pnpm db:down`           | Start / stop PostgreSQL                           |
 | `pnpm db:generate`                      | Create a SQL migration after changing `schema.ts` |
 | `pnpm db:migrate`                       | Apply pending migrations                          |
+| `pnpm auth:set-password <email>`        | Set a user's password (creates the user if new)   |
 | `pnpm --filter @expenses/api db:studio` | Browse the database in the browser                |
 
 ## API (v1)
@@ -98,8 +107,18 @@ curl -s -F file=@data/result.json http://localhost:3000/api/v1/imports
 | GET    | `/api/v1/stats/timeseries` | `?granularity=year\|month\|day&from&to` — gaps filled with 0   |
 | GET    | `/api/v1/stats/top`        | `?from&to&limit` — biggest expenses                            |
 
-> ⚠️ No login yet (Phase 6). Every request acts as `OWNER_EMAIL`. Do not deploy before Phase 6 —
-> the API refuses to start with `NODE_ENV=production` until then.
+Everything except `health` and `auth/*` needs a signed-in session (httpOnly cookie).
+Sessions end after 14 days without use, or 60 days in any case — see
+[ADR 0009](docs/adr/0009-auth-sessions.md).
+
+| Method | Path                      | What                                        |
+| ------ | ------------------------- | ------------------------------------------- |
+| GET    | `/api/v1/auth/config`     | `{ registrationEnabled }`                   |
+| POST   | `/api/v1/auth/register`   | `{ email, password }` → account + signed in |
+| POST   | `/api/v1/auth/login`      | `{ email, password }` → signed in           |
+| POST   | `/api/v1/auth/logout`     | sign out this browser                       |
+| POST   | `/api/v1/auth/logout-all` | sign out everywhere                         |
+| GET    | `/api/v1/auth/me`         | the signed-in user, or 401                  |
 
 ## Golden rule
 

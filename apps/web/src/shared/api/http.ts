@@ -17,6 +17,22 @@ export class ApiError extends Error {
   }
 }
 
+/**
+ * Called when the server answers 401 "Not signed in" — e.g. the session expired while the tab
+ * was open. The app layer decides what to do (go to the sign-in page); shared code only reports.
+ * Sign-in/sign-up are excluded: there a 401 just means "wrong password".
+ */
+let unauthorizedHandler: (() => void) | null = null;
+const CREDENTIAL_PATHS = ['/auth/login', '/auth/register'];
+
+export function setUnauthorizedHandler(handler: (() => void) | null): void {
+  unauthorizedHandler = handler;
+}
+
+const FRIENDLY_STATUS: Record<number, string> = {
+  429: 'Too many attempts. Please wait a few minutes and try again.',
+};
+
 type QueryValue = string | number | undefined | null;
 
 /** { from: '2026-01-01', q: undefined } → "?from=2026-01-01" (empty values are skipped). */
@@ -50,10 +66,12 @@ export async function http<T>(path: string, init: RequestInit = {}): Promise<T> 
 
   const body: unknown = await response.json().catch(() => null);
   if (!response.ok) {
+    if (response.status === 401 && !CREDENTIAL_PATHS.includes(path)) unauthorizedHandler?.();
     const { message, errors } = (body ?? {}) as { message?: unknown; errors?: unknown };
     throw new ApiError(
       response.status,
-      typeof message === 'string' ? message : `Request failed (${response.status})`,
+      FRIENDLY_STATUS[response.status] ??
+        (typeof message === 'string' ? message : `Request failed (${response.status})`),
       Array.isArray(errors) ? errors : [],
     );
   }

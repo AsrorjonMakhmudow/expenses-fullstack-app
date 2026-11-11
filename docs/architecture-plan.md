@@ -53,7 +53,7 @@ Rule: date line `DD.MM.YYYY`, then lines `AMOUNT - description`. Amount uses `.`
 | Architecture       | Modular monolith, API-first                                                                           | One app with clear rooms; web + future mobile share the API.                                        |
 | Frontend           | Vite + React + TS, FSD, TanStack Query, React Router, react-hook-form + Zod, Apache ECharts, Tailwind |                                                                                                     |
 | Repo               | pnpm monorepo: apps/api, apps/web, packages/shared (zod schemas, types, parser, money/date utils)     | DRY: one schema for front + back; parser reused.                                                    |
-| Auth               | Single user, argon2 password hash, httpOnly session cookie                                            | Simple, secure; user_id kept in schema for future.                                                  |
+| Auth               | Email + password for many users, argon2id, httpOnly session cookie (ADR 0009)                         | Simple, secure, revocable; each user sees only their own data.                                      |
 | Deploy             | Cheap VPS + Docker Compose (api, postgres, caddy) + cheap domain, nightly pg_dump backups off-server  | Caddy gives free auto-HTTPS.                                                                        |
 
 ## Charts
@@ -75,7 +75,7 @@ Rule: date line `DD.MM.YYYY`, then lines `AMOUNT - description`. Amount uses `.`
 
 ## API (v1)
 
-- POST /auth/login, POST /auth/logout, GET /auth/me
+- GET /auth/config, POST /auth/register, POST /auth/login, POST /auth/logout, POST /auth/logout-all, GET /auth/me
 - GET /expenses?from&to&q&page, POST /expenses, PATCH /expenses/:id, DELETE /expenses/:id
 - GET /stats/summary?from&to
 - GET /stats/timeseries?granularity=year|month|day&from&to
@@ -123,7 +123,7 @@ Imports go only downward: app → pages → widgets → features → entities �
 3. ✅ NestJS + Drizzle + Postgres: expenses CRUD, migrations, Zod validation, unit + e2e tests.
 4. ✅ Imports: upload → preview → commit, dedupe fingerprints, one transaction, undo (ADR 0006).
 5. ✅ Stats endpoints: summary, timeseries (year/month/day, gaps filled), top expenses.
-6. Auth (argon2, sessions, guard, rate-limit login).
+6. ✅ Auth (ADR 0009): register/sign-in, argon2id, server sessions in an httpOnly cookie, idle 14 d + max 60 d expiry, rate limit, CSRF check.
 7. ✅ Frontend (before auth, by choice): FSD, dashboard charts, import wizard, expenses table (ADR 0007). Login page comes with Phase 6.
 8. Deploy: Docker Compose, Caddy, domain, backups, GitHub Actions CI.
    9+. Telegram bot, categories (keyword rules), budgets, Excel export, mobile app (Expo, reusing packages/shared).

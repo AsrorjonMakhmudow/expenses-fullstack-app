@@ -1,17 +1,18 @@
 import type { NestExpressApplication } from '@nestjs/platform-express';
 import { Test } from '@nestjs/testing';
 import { sql } from 'drizzle-orm';
-import request from 'supertest';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { AppModule } from '../src/app.module.js';
 import { configureApp } from '../src/app.setup.js';
 import { DB } from '../src/infra/database/database.module.js';
 import { TODAY } from '../src/modules/stats/stats.service.js';
 import type { Database } from '../src/infra/database/database.module.js';
+import { signedInBrowser } from './support/sign-in.js';
+import type { Browser } from './support/sign-in.js';
 
 describe('Stats API (e2e)', () => {
   let app: NestExpressApplication;
-  let http: ReturnType<typeof request>;
+  let http: Browser;
 
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({ imports: [AppModule] })
@@ -21,7 +22,7 @@ describe('Stats API (e2e)', () => {
       .compile();
     app = configureApp(moduleRef.createNestApplication<NestExpressApplication>());
     await app.init();
-    http = request(app.getHttpServer());
+    ({ browser: http } = await signedInBrowser(app));
 
     await app.get<Database>(DB).execute(sql`truncate table import_batches, expenses`);
     for (const [date, amount, description] of [

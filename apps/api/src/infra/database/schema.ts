@@ -30,10 +30,37 @@ const createdAt = () =>
 export const users = pgTable('users', {
   id: uuid('id').primaryKey().defaultRandom(),
   email: text('email').notNull().unique(),
-  /** Filled in Phase 6 (auth). Nullable until then. */
+  /** argon2id hash. Null = no password set yet (e.g. the old dev owner) → can't sign in. */
   passwordHash: text('password_hash'),
   createdAt: createdAt(),
 });
+
+const timestamptz = (name: string) => timestamp(name, { withTimezone: true, precision: 3 });
+
+/**
+ * One row per signed-in browser/device (ADR 0009).
+ * `id` is the SHA-256 of the cookie token — the token itself is never stored.
+ */
+export const sessions = pgTable(
+  'sessions',
+  {
+    id: text('id').primaryKey(),
+    userId: uuid('user_id')
+      .notNull()
+      .references(() => users.id, { onDelete: 'cascade' }),
+    createdAt: createdAt(),
+    lastUsedAt: timestamptz('last_used_at').notNull().defaultNow(),
+    /** Idle expiry: moves forward while the session is used. */
+    expiresAt: timestamptz('expires_at').notNull(),
+    /** Hard limit: never moves. */
+    absoluteExpiresAt: timestamptz('absolute_expires_at').notNull(),
+    userAgent: text('user_agent'),
+  },
+  (t) => [
+    index('sessions_user_id_idx').on(t.userId),
+    index('sessions_expires_at_idx').on(t.expiresAt),
+  ],
+);
 
 /**
  * One uploaded file = one import batch. Lets us show import history and UNDO an import
@@ -103,5 +130,5 @@ export const expenses = pgTable(
   ],
 );
 
-export const schema = { users, importBatches, expenses, expenseSource };
+export const schema = { users, sessions, importBatches, expenses, expenseSource };
 export type Schema = typeof schema;

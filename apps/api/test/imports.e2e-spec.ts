@@ -2,12 +2,13 @@ import { readFileSync } from 'node:fs';
 import type { NestExpressApplication } from '@nestjs/platform-express';
 import { Test } from '@nestjs/testing';
 import { sql } from 'drizzle-orm';
-import request from 'supertest';
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { AppModule } from '../src/app.module.js';
 import { configureApp } from '../src/app.setup.js';
 import { DB } from '../src/infra/database/database.module.js';
 import type { Database } from '../src/infra/database/database.module.js';
+import { signedInBrowser } from './support/sign-in.js';
+import type { Browser } from './support/sign-in.js';
 
 // A small Telegram Desktop export, shaped like the real result.json.
 const telegramExport = (messages: object[]) =>
@@ -32,13 +33,13 @@ const fixture = (name: string) => readFileSync(new URL(`./fixtures/${name}`, imp
 
 describe('Imports API (e2e)', () => {
   let app: NestExpressApplication;
-  let http: ReturnType<typeof request>;
+  let http: Browser;
 
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({ imports: [AppModule] }).compile();
     app = configureApp(moduleRef.createNestApplication<NestExpressApplication>());
     await app.init();
-    http = request(app.getHttpServer());
+    ({ browser: http } = await signedInBrowser(app));
   });
 
   beforeEach(async () => {

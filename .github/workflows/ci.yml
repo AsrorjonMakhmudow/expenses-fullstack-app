@@ -26,7 +26,6 @@ jobs:
 
     env:
       TEST_DATABASE_URL: postgresql://expenses:expenses@localhost:5432/expenses_test
-      OWNER_EMAIL: ci@example.com
 
     steps:
       - uses: actions/checkout@v4

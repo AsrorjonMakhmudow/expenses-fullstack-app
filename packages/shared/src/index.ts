@@ -8,6 +8,7 @@ export type { IsoDate } from './lib/date.js';
 export { parseDmyDate, parseIsoDatePrefix, toIsoDate } from './lib/date.js';
 export { parseSomAmount } from './lib/money.js';
 export * from './expense-import/index.js';
+export * from './auth/auth.contract.js';
 export * from './expense/expense.contract.js';
 export * from './import/import.contract.js';
 export * from './stats/stats.contract.js';

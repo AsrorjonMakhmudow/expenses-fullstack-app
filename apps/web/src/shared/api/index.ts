@@ -1,1 +1,1 @@
-export { ApiError, http, json, toQueryString } from './http';
+export { ApiError, http, json, setUnauthorizedHandler, toQueryString } from './http';

@@ -22,7 +22,8 @@
     "db:up": "docker compose up -d db",
     "db:down": "docker compose down",
     "db:generate": "pnpm build:shared && pnpm --filter @expenses/api db:generate",
-    "db:migrate": "pnpm --filter @expenses/api db:migrate"
+    "db:migrate": "pnpm --filter @expenses/api db:migrate",
+    "auth:set-password": "pnpm build:shared && pnpm --filter @expenses/api auth:set-password"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

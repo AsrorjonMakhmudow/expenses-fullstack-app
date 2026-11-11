@@ -15,6 +15,13 @@
       "when": 1793216414905,
       "tag": "0001_import_batches",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1794393513949,
+      "tag": "0002_sessions",
+      "breakpoints": true
     }
   ]
 }

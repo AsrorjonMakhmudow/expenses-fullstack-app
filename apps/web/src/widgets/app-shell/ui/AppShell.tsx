@@ -1,4 +1,7 @@
+import { useQuery } from '@tanstack/react-query';
 import { NavLink, Outlet } from 'react-router';
+import { currentUserQuery } from '@/entities/user';
+import { SignOutButton } from '@/features/sign-out';
 
 const links = [
   { to: '/', label: 'Dashboard', end: true },
@@ -8,6 +11,7 @@ const links = [
 
 /** The frame around every page: header + navigation, page content in <Outlet />. */
 export function AppShell() {
+  const { data: user } = useQuery(currentUserQuery);
   return (
     <div className="min-h-screen">
       <header className="border-b border-line bg-surface">
@@ -28,6 +32,14 @@ export function AppShell() {
               {link.label}
             </NavLink>
           ))}
+          <div className="ml-auto flex items-center gap-3">
+            {user && (
+              <span className="hidden text-sm text-ink-2 sm:inline" title="Signed in as">
+                {user.email}
+              </span>
+            )}
+            <SignOutButton />
+          </div>
         </nav>
       </header>
       <main className="mx-auto max-w-6xl px-4 py-6">
